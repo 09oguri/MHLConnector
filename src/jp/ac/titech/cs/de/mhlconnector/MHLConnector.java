@@ -17,6 +17,12 @@ public class MHLConnector {
 		this.mhlLogger = new MHLLogger(logFilePath);
 		this.isStopped = false;
 	}
+	
+	private long calcNumOfData() {
+		long numOfData = interactiveSocket.getTakeInterval()
+				/ interactiveSocket.getMeasurementInterval();
+		return numOfData;
+	}
 
 	private ArrayList<Double> calcPower() throws IOException {
 		Response res = getVolts();
@@ -36,6 +42,14 @@ public class MHLConnector {
 
 		return powerList;
 	}
+	
+	private long calcTimestamp(long currentTime, int i) {
+		long takeInterval = interactiveSocket.getTakeInterval();
+		long measurementInterval = interactiveSocket.getMeasurementInterval();
+		long timestamp = currentTime - (takeInterval - measurementInterval * i);
+		
+		return timestamp;
+	}
 
 	// MemoryHiLoggerから電圧データを受け取る
 	private Response getVolts() throws IOException {
@@ -47,8 +61,7 @@ public class MHLConnector {
 
 	public void start() throws UnknownHostException, IOException {
 		long sumNumOfData = 0L;
-		long numOfData = interactiveSocket.getTakeInterval()
-				/ interactiveSocket.getMeasurementInterval();
+		long numOfData = calcNumOfData();
 
 		startMeasurement();
 
@@ -61,7 +74,8 @@ public class MHLConnector {
 
 			for (int i = 0; i < numOfData; i++) {
 				ArrayList<Double> powerList = calcPower();
-				mhlLogger.printlnPower(before, powerList);
+				long timestamp = calcTimestamp(before, i);
+				mhlLogger.printlnPower(timestamp, powerList);
 			}
 			sumNumOfData += numOfData;
 
@@ -117,8 +131,7 @@ public class MHLConnector {
 		interactiveStream.receiveCommand();
 
 		// 1回のtakeで取得するデータ数を設定
-		long takeInterval = interactiveSocket.getTakeInterval();
-		int numOfData = (int) (takeInterval / measurementInterval);
+		int numOfData = (int) calcNumOfData();
 		Command.setRequireNumOfData(numOfData);
 	}
 

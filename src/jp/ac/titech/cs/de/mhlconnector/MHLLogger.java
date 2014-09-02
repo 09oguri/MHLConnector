@@ -26,6 +26,7 @@ public class MHLLogger {
 			writer.print(power + "\t");
 		}
 		writer.println("");
+		writer.flush();
 	}
 
 	public void printlnPower(long time, ArrayList<Double> powerList) {

@@ -90,10 +90,10 @@ public class MHLConnector {
 
 	private void startMeasurement() throws IOException {
 		// データの測定間隔を設定
-		long samplingTime = interactiveSocket.getSamplingTime();
-		if (samplingTime == 10) {
+		long measurementInterval = interactiveSocket.getMeasurementInterval();
+		if (measurementInterval == 10L) {
 			interactiveStream.sendCommand(Command.SAMP_10ms);
-		} else if (samplingTime == 50) {
+		} else if (measurementInterval == 50L) {
 			interactiveStream.sendCommand(Command.SAMP_50ms);
 		} else {
 			interactiveStream.sendCommand(Command.SAMP_100ms);
@@ -116,10 +116,9 @@ public class MHLConnector {
 		interactiveStream.sendCommand(Command.REQUIRE_DATA);
 		interactiveStream.receiveCommand();
 
-		// 1回のデータ取得数を設定
-		int numOfData = (int) (interactiveSocket.getTakeInterval() / interactiveSocket
-				.getMeasurementInterval());
-
+		// 1回のtakeで取得するデータ数を設定
+		long takeInterval = interactiveSocket.getTakeInterval();
+		int numOfData = (int) (takeInterval / measurementInterval);
 		Command.setRequireNumOfData(numOfData);
 	}
 

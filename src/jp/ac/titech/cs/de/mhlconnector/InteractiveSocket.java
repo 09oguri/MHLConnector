@@ -17,7 +17,6 @@ public class InteractiveSocket {
 	private final int port;
 	private final long measurementInterval;
 	private final long delayTime;
-	private final long samplingTime;
 	private final int maxChannel;
 	private final int maxUnit;
 	private final long takeInterval;
@@ -34,8 +33,6 @@ public class InteractiveSocket {
 				.getProperty("hilogger.info.measurementInterval"));
 		this.delayTime = Long.parseLong(config
 				.getProperty("hilogger.info.delayTime"));
-		this.samplingTime = Long.parseLong(config
-				.getProperty("hilogger.info.samplingTime"));
 		this.maxChannel = Integer.parseInt(config
 				.getProperty("hilogger.info.maxChannel"));
 		this.maxUnit = Integer.parseInt(config
@@ -78,10 +75,6 @@ public class InteractiveSocket {
 
 	public long getMeasurementInterval() {
 		return measurementInterval;
-	}
-
-	public long getSamplingTime() {
-		return samplingTime;
 	}
 
 	public long getTakeInterval() {
